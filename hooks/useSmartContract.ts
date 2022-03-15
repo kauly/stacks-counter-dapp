@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { cvToString, hexToCV } from '@stacks/transactions'
-import useInterval from '@use-it/interval'
-import useSmartContractApi from './useSmartContractApi'
 import { CallReadOnlyFunctionRequest } from '@stacks/blockchain-api-client'
-import config from '../utils/config'
+import useInterval from '@use-it/interval'
+import config from '@/utils/config'
+import { getErrorMessage } from '@/utils/helpers'
+import useSmartContractApi from './useSmartContractApi'
 
 const { contractAddress, contractName } = config
 
@@ -28,19 +29,14 @@ const useSmartContract = () => {
       const response = await client.callReadOnlyFunction(request)
       setError('')
       if (response.okay && response.result) {
-        const parsed = cvToString(hexToCV(response.result)).slice(2, -1)
-        console.log(
-          '🚀 ~ file: useSmartContract.ts ~ line 31 ~ getCounterValue ~ result',
-          response.result
-        )
-        setCounter(parseInt(parsed))
+        // cvToString will return (ok n), that is why the slice here
+        const parsedToString = cvToString(hexToCV(response.result)).slice(3, -1)
+        const parsedToNumber = parseInt(parsedToString)
+        setCounter((p) => (p !== parsedToNumber ? parsedToNumber : p))
       }
     } catch (err) {
-      console.log(
-        '🚀 ~ file: useSmartContract.ts ~ line 35 ~ getCounterValue ~ err',
-        err
-      )
-      setError(err?.message)
+      const message = getErrorMessage(err)
+      setError(message)
     } finally {
       setLoading(false)
     }

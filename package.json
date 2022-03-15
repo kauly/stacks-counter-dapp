@@ -7,6 +7,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@stacks/auth": "^3.3.0",
     "@stacks/blockchain-api-client": "^2.1.1",
     "@stacks/connect-react": "^13.0.0",
     "@stacks/network": "^3.2.0",
